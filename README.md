@@ -9,19 +9,17 @@ The following recipe has been tested on lxplus.
 * Fork the new cmgtools-lite repository, see [here](https://github.com/CERN-PH-CMG/cmgtools-lite).
 * Then set up your working area, see below.
 
-### Set up CMSSW and CMGTools
+### Set up CMSSW release area and CMGTools packages
 
 Installation instructions are found [here](https://twiki.cern.ch/twiki/bin/viewauth/CMS/CMGToolsReleasesExperimental#CMGTools_lite_development_releas). 
 
 Documentation and tutorial can be found [here](https://twiki.cern.ch/twiki/bin/view/CMS/CMGToolsMain) and [here](https://twiki.cern.ch/twiki/bin/view/CMS/CMGToolsPythonAnalysis).
 
-### Tweaks to the baseline installation
+### Tweaks to the 'baseline' installation
 
 Edit ```POG_PFID_Loose``` --> ```POG_PFID_Loose2016``` in the line [here](https://github.com/CERN-PH-CMG/cmgtools-lite/blob/94X_dev/H2TauTau/python/proto/analyzers/JetAnalyzer.py#L251)
 
 To obtain correct JECs, run **[this](https://github.com/CERN-PH-CMG/cmgtools-lite/blob/94X_dev/RootTools/data/jec/getJec.py)** cfg using ```cmsRun```. **First**, edit the cfg to use the correct GT (e.g. [this one](https://github.com/ICBPHCMS/BKstLL/blob/master/cfgPython/b0kstee_gen_cfg.py#L108))
-
-### Compile CMGTools
 
 ### Install and run BKstLL package
 
