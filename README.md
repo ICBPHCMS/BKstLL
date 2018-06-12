@@ -15,7 +15,7 @@ First, you need to setup CMGTools. The instructions found below are taken from [
 
 ### Set up CMSSW and CMGTools
 
-Installation instructions copied from [here](https://twiki.cern.ch/twiki/bin/viewauth/CMS/CMGToolsReleasesExperimental#CMGTools_lite_development_releas). **Check this page first as release may have changed!**
+Installation instructions are found [here](https://twiki.cern.ch/twiki/bin/viewauth/CMS/CMGToolsReleasesExperimental#CMGTools_lite_development_releas). 
 
 Documentation and tutorial can be found [here](https://twiki.cern.ch/twiki/bin/view/CMS/CMGToolsMain) and [here](https://twiki.cern.ch/twiki/bin/view/CMS/CMGToolsPythonAnalysis).
 
