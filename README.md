@@ -23,6 +23,15 @@ To obtain correct JECs, run **[this](https://github.com/CERN-PH-CMG/cmgtools-lit
 
 ### Install and run BKstLL package
 
+```
+cd $CMSSW_BASE/src/CMSTools
+git clone git@github.com:bainbrid/BKstLL.git
+cd BKstLL
+scram b
+cd cfgPython
+heppy test b0kstee_gen_cfg.py -N10
+```
+
 Your flat root tree should be found at ```test/BdKstMM/BKstLLGenTreeProducer/tree.root```
 
 It's probably sufficient to run interactively to produce the flat trees.
