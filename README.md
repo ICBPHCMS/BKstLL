@@ -2,10 +2,6 @@
 
 The following recipe has been tested on lxplus.
 
-### CMSTools
-
-First, you need to setup CMGTools. The instructions found below are taken from [here](https://twiki.cern.ch/twiki/bin/view/CMS/CMGToolsReleasesExperimental).
-
 ### Prerequisites
 
 * Subscribe to github and set it up for CMSSW, see [here](http://cms-sw.github.io/faq.html#how-do-i-subscribe-to-github).
@@ -23,7 +19,7 @@ Documentation and tutorial can be found [here](https://twiki.cern.ch/twiki/bin/v
 
 Edit ```POG_PFID_Loose``` --> ```POG_PFID_Loose2016``` in the line [here](https://github.com/CERN-PH-CMG/cmgtools-lite/blob/94X_dev/H2TauTau/python/proto/analyzers/JetAnalyzer.py#L251)
 
-To obtain correct JECs, run **[this](https://github.com/CERN-PH-CMG/cmgtools-lite/blob/94X_dev/RootTools/data/jec/getJec.py)** cfg using ```cmsRun```. **First**, edit the cfg to use the correct GT (e.g. [this one](https://github.com/rmanzoni/BKstLL/blob/master/cfgPython/b0kstee_gen_cfg.py#L108))
+To obtain correct JECs, run **[this](https://github.com/CERN-PH-CMG/cmgtools-lite/blob/94X_dev/RootTools/data/jec/getJec.py)** cfg using ```cmsRun```. **First**, edit the cfg to use the correct GT (e.g. [this one](https://github.com/ICBPHCMS/BKstLL/blob/master/cfgPython/b0kstee_gen_cfg.py#L108))
 
 ### Compile CMGTools
 
