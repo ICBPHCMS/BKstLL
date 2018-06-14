@@ -87,7 +87,49 @@ for var in ["pt","eta","phi","m","ch"] :
     lm_reco_var = getattr(this,"lm_reco_"+var)
     setattr(this,"ll_lead_reco_"+var,np.array([ lp if ok else lm for lp,lm,ok in zip(lp_reco_var,lm_reco_var,lead) ]))
     setattr(this,"ll_sub_reco_"+var,np.array([ lp if ~ok else lm for lp,lm,ok in zip(lp_reco_var,lm_reco_var,lead) ]))
-    
+
+################################################################################
+# efficiency weights per lepton
+import pickle
+file = open('effs.pkl','r')
+efficiencies = pickle.load(file)
+file.close()
+
+eta_bins = odict([("0p0",(0.,0.8)),
+                  ("0p8",(0.8,1.442)),
+                  ("1p4",(1.442,2.0)),
+                  ("2p0",(2.0,2.5))])
+eta_vals,eta_keys = zip(*[ (val[0],key) for key,val in eta_bins.items() ])
+
+threshold = ["Seed2p0","Seed1p0","Seed0p5","Gsf0p5"][3] # CHOOSE THIS !
+
+effs = odict([
+        ("{:}".format(eta_bin),
+         efficiencies["pt_genEles_gsfEles_eta{:s}_{:s}".format(eta_bin,threshold)]) \
+            for eta_bin in eta_bins.keys()
+        ])
+
+def get_eff_low(pt,eta) :
+    eta_bin = eta_keys[np.searchsorted(eta_vals,abs(eta),side='right')-1]
+    pts = effs[eta_bin][0]
+    pt_bin = np.searchsorted(pts,max(1.e-3,pt),side='right')-1
+    #print eta_bin,eta,pt_bin,pts[pt_bin],pt,effs[eta_bin][1][pt_bin]
+    return effs[eta_bin][1][pt_bin]# if pt > 0.1 and abs(eta) < 2.5 else 0.
+def get_eff_high(pt,eta) :
+    eta_bin = eta_keys[np.searchsorted(eta_vals,abs(eta),side='right')-1]
+    pts = effs[eta_bin][0]
+    pt_bin = np.searchsorted(pts,min(10.,pt),side='left')
+    return effs[eta_bin][1][pt_bin]# if pt > 0.1 and abs(eta) < 2.5 else 0.
+get_effs = np.vectorize(get_eff_low)
+
+lp_effs = get_effs(lp_pt,lp_eta)
+lm_effs = get_effs(lm_pt,lm_eta)
+ll_effs = lp_effs * lm_effs
+lp_weights = np.random.random((len(lp_effs),))<lp_effs
+lm_weights = np.random.random((len(lm_effs),))<lm_effs
+ll_weights = lp_weights * lm_weights
+################################################################################
+
 # pion RECO
 (pi_reco_pt, pi_reco_eta, pi_reco_phi) = tree.arrays(['bd_pi_reco_pt',
                                                       'bd_pi_reco_eta',
