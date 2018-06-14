@@ -470,12 +470,10 @@ def plot_object_scale() :
 
 ################################################################################
 
-def eff_vs_hadron_pt_cut() :
-    acc = False 
+def eff_vs_hadron_pt_cut(acc = False) :
     setTDRStyle()
     c1 = r.TCanvas()
     his = r.TEfficiency("","",51,-50.,5050.) 
-    effs = {}
     for pt_cut in range(0,5100,100) :
         if acc == True :
             k_pass_tmp  = ( k_pt  > pt_cut/1000. ) & ( abs(k_eta)  < eta_cut )
@@ -503,21 +501,35 @@ def eff_vs_hadron_pt_cut() :
 
 ################################################################################
 
-def eff_vs_lepton_pt_cut() :
+def eff_vs_lepton_pt_cut(only_acc=False,use_effs=False) :
     setTDRStyle()
     c1 = r.TCanvas()
     his = r.TEfficiency("","",51,-50.,5050.) 
-    effs = {}
     for pt_cut in range(0,5100,100) :
-#        lp_pass_tmp = ( lp_pt > pt_cut/1000. ) & ( abs(lp_eta) < eta_cut )
-#        lm_pass_tmp = ( lm_pt > pt_cut/1000. ) & ( abs(lm_eta) < eta_cut )
-#        all_pass_tmp = lp_pass_tmp & lm_pass_tmp & k_pass & ( pi_pass | ~bkstll )
-        lp_pass_tmp = ( lp_reco_pt > pt_cut/1000. ) & ( abs(lp_reco_eta) < eta_reco_cut )
-        lm_pass_tmp = ( lm_reco_pt > pt_cut/1000. ) & ( abs(lm_reco_eta) < eta_reco_cut )
-        all_pass_tmp = lp_pass_tmp & lm_pass_tmp & k_reco_pass & ( pi_reco_pass | ~bkstll )
-        for in_acc,trig in zip(all_pass_tmp,mu_low) :
-            if trig : his.Fill(1 if in_acc == True else 0,pt_cut)
-    his.SetTitle(";lepton p^{gen}_{T} cut [MeV];Acceptance")
+        if only_acc == True :
+            lp_pass_tmp = ( ll_lead_pt > pt_cut/1000. ) & ( abs(ll_lead_eta) < eta_cut )
+            lm_pass_tmp = ( ll_sub_pt > pt_cut/1000. ) & ( abs(ll_sub_eta) < eta_cut )
+            #lp_pass_tmp = ( lp_pt > pt_cut/1000. ) & ( abs(lp_eta) < eta_cut )
+            #lm_pass_tmp = ( lm_pt > pt_cut/1000. ) & ( abs(lm_eta) < eta_cut )
+            all_pass_tmp = lp_pass_tmp & lm_pass_tmp & k_pass & ( pi_pass | ~bkstll )
+        else :
+            lp_pass_tmp = ( ll_lead_reco_pt > pt_cut/1000. ) & ( abs(ll_lead_reco_eta) < eta_reco_cut )
+            lm_pass_tmp = ( ll_sub_reco_pt > pt_cut/1000. ) & ( abs(ll_sub_reco_eta) < eta_reco_cut )
+            #lp_pass_tmp = ( lp_reco_pt > pt_cut/1000. ) & ( abs(lp_reco_eta) < eta_reco_cut )
+            #lm_pass_tmp = ( lm_reco_pt > pt_cut/1000. ) & ( abs(lm_reco_eta) < eta_reco_cut )
+            all_pass_tmp = lp_pass_tmp & lm_pass_tmp & k_reco_pass & ( pi_reco_pass | ~bkstll )
+        # need to weight lp_pass_tmp and lm_pass_tmp
+        for in_acc,trig,eff,wei in zip(all_pass_tmp,mu_low,ll_effs,ll_weights) :
+            if trig : 
+                #weight = wei if use_effs else 1
+                #his.Fill(weight if in_acc == True else 0,pt_cut)
+                if use_effs : 
+                    his.FillWeighted(1 if in_acc == True else 0,eff,pt_cut)
+                    his.FillWeighted(0,1.-eff,pt_cut)
+                else :
+                    his.Fill(1 if in_acc == True else 0,pt_cut)
+
+    his.SetTitle(";lepton p^{gen}_{T} cut [MeV];"+"{:s}".format("Acceptance" if only_acc == True else "#it{A}#times#epsilon"))
     his.Draw("")
     r.gPad.Update()
     his.GetPaintedGraph().GetYaxis().SetNdivisions(510)
@@ -529,8 +541,8 @@ def eff_vs_lepton_pt_cut() :
     his.SetLineColor(r.kRed)
     r.gStyle.SetOptStat(0)
     c1.Update()
-    #c1.SaveAs("{:s}/{:s}/eff_vs_lepton_pt_cut.pdf".format(dir,"bkstll" if bkstll == True else "bkll"))
-    c1.SaveAs("{:s}/eff_vs_lepton_pt_cut.pdf".format(dir))
+    c1.SaveAs("{:s}/{:s}/{:s}_vs_lepton_pt_cut.pdf".format(dir,"bkstll" if bkstll == True else "bkll", "acc" if only_acc == True else "eff"))
+    print "Acc. x Eff.:",his.GetEfficiency(his.FindFixBin(500.))
 
 ################################################################################
 
@@ -538,7 +550,6 @@ def acc_vs_pt_cut() :
     setTDRStyle()
     c1 = r.TCanvas()
     his = r.TEfficiency("","",51,-50.,5050.) 
-    effs = {}
     for pt_cut in range(0,5100,100) :
         lp_pass_tmp = ( lp_pt > pt_cut/1000. ) & ( abs(lp_eta) < eta_cut )
         lm_pass_tmp = ( lm_pt > pt_cut/1000. ) & ( abs(lm_eta) < eta_cut )
@@ -889,14 +900,14 @@ def plot_bkll() :
 #plot_object("pt")
 #plot_object("eta")
 #plot_object("phi")
-plot_object("pt_lead")
+#plot_object("pt_lead")
 #plot_object("eta_lead")
 #plot_object("phi_lead")
 #reco_vs_gen_pt() 
 #plot_object_eff(True)
 #plot_object_scale()
-eff_vs_hadron_pt_cut()
-#eff_vs_lepton_pt_cut()
+#eff_vs_hadron_pt_cut()
+eff_vs_lepton_pt_cut(only_acc=True,use_effs=True)
 #acc_vs_pt_cut()
 #deltar_vs_pt()
 #deltar_vs_pt_binned()
